@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2F6F5E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Casinha">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Nossa Casinha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600&display=swap">
+<style>
+/* Layout: uma coluna estreita tipo app de celular; painel do cofrinho no topo, lista por cômodo embaixo */
+:root{
+  --bg:#EEF2EF; --surface:#FFFFFF; --ink:#1F3A33; --muted:#5E7069; --line:#D4DDD8;
+  --accent:#2F6F5E; --accent-ink:#FFFFFF; --sun:#E9B949; --sun-soft:#FBF0D3;
+  --alta:#C2483B; --media:#C88A1E; --baixa:#5E7F9E; --ok:#3F8A5A;
+  --display:"Cormorant Garamond", Garamond, Georgia, serif;
+  --body:"Jost", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121A18; --surface:#1B2623; --ink:#E4EEEA; --muted:#97A9A2; --line:#2C3B37;
+  --accent:#6FC2A7; --accent-ink:#0E1A16; --sun:#E9B949; --sun-soft:#3A3220;
+  --alta:#EE7A6C; --media:#E5AE4B; --baixa:#8FB1D1; --ok:#73C28F; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#121A18; --surface:#1B2623; --ink:#E4EEEA; --muted:#97A9A2; --line:#2C3B37;
+  --accent:#6FC2A7; --accent-ink:#0E1A16; --sun:#E9B949; --sun-soft:#3A3220;
+  --alta:#EE7A6C; --media:#E5AE4B; --baixa:#8FB1D1; --ok:#73C28F; color-scheme:dark }
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 96px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-family:var(--display);font-weight:500;font-style:italic;font-size:2.7rem;letter-spacing:.01em;margin:0;line-height:1.1;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:1.6rem;margin:0}
+.sub{color:var(--muted);margin:4px 0 0}
+.num{font-variant-numeric:tabular-nums}
+.label{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+.cofre{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.big{font-family:var(--display);font-weight:600;font-size:2.9rem;line-height:1}
+.bar{height:12px;background:var(--line);border-radius:99px;overflow:hidden;display:flex}
+.bar span{display:block;height:100%}
+.bar .g{background:var(--accent)} .bar .s{background:var(--sun)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--muted)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.grid3>div{min-width:0}
+.grid3 .v{font-family:var(--display);font-weight:600;font-size:1.35rem}
+.meta{background:var(--sun-soft);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.meta strong{font-family:var(--display);font-weight:600;font-size:1.55rem}
+.finbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.finbtns .pri{grid-column:1/-1}
+.finbtns .btn{padding:10px 8px;font-size:.9rem}
+.gl{display:grid;grid-template-columns:1fr 110px auto;gap:8px;align-items:center}
+.gl input{padding:8px 10px}
+.x{font:inherit;background:transparent;border:0;color:var(--alta);font-size:1.3rem;cursor:pointer;padding:4px 8px}
+.glist{display:flex;flex-direction:column;gap:8px}
+
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted);font-weight:500;min-width:0}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.next{display:flex;flex-direction:column;gap:8px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chip{flex:none;font:inherit;font-size:.86rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 13px;border-radius:99px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:13px 14px;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.check{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--accent-ink);padding:0}
+.check.on{background:var(--ok);border-color:var(--ok)}
+.check svg{width:14px;height:14px}
+.body{min-width:0;cursor:pointer}
+.nome{font-weight:500;overflow-wrap:anywhere}
+.done .nome{text-decoration:line-through;color:var(--muted)}
+.info{display:flex;gap:8px;align-items:center;font-size:.8rem;color:var(--muted);margin-top:2px;flex-wrap:wrap}
+.pill{font-size:.7rem;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:99px;border:1.5px solid currentColor}
+.p1{color:var(--alta)} .p2{color:var(--media)} .p3{color:var(--baixa)}
+.preco{font-weight:600;text-align:right}
+.preco small{display:block;font-weight:400;font-size:.72rem;color:var(--muted)}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+.sec{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+
+.fab{position:fixed;right:max(18px,calc(env(safe-area-inset-right,0px) + 18px));bottom:calc(env(safe-area-inset-bottom,0px) + 18px);
+  font:inherit;font-weight:700;background:var(--accent);color:var(--accent-ink);border:0;border-radius:99px;padding:14px 20px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.sheet-bg{position:fixed;inset:0;background:rgba(10,20,17,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:var(--surface);width:100%;max-width:560px;border-radius:20px 20px 0 0;
+  padding:20px max(18px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 20px) max(18px,env(safe-area-inset-left,0px));
+  display:flex;flex-direction:column;gap:12px;max-height:92%;overflow:auto}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toggle{display:flex;align-items:center;gap:10px;font-weight:600;cursor:pointer}
+.toggle input{width:20px;height:20px}
+.actions{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:4px}
+.btn{font:inherit;font-weight:600;border-radius:12px;padding:11px 16px;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.del{color:var(--alta);border-color:transparent;padding-left:0}
+.note{font-size:.8rem;color:var(--muted)}
+@media (max-width:380px){.grid3{grid-template-columns:1fr 1fr}.big{font-size:2.4rem}}
+@media (prefers-reduced-motion:no-preference){.bar span{transition:width .5s ease}}
+.login{position:fixed;inset:0;background:var(--bg);z-index:40;display:flex;align-items:center;justify-content:center;
+  padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.login form{width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}
+.err{color:var(--alta);font-size:.85rem;min-height:1.2em;margin:0}
+.sair{font:inherit;font-size:.8rem;background:transparent;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:0}
+</style>
+</head>
+<body>
+<div class="login" id="login" hidden>
+  <form id="loginForm">
+    <h1>Nossa Casinha</h1>
+    <p class="sub">Entre com o email e a senha de vocês.</p>
+    <label class="f">Email<input id="lEmail" type="email" autocomplete="username" required></label>
+    <label class="f">Senha<input id="lSenha" type="password" autocomplete="current-password" required></label>
+    <p class="err" id="lErr"></p>
+    <button class="btn pri" type="submit">Entrar</button>
+  </form>
+</div>
+
+<div class="wrap">
+  <header>
+    <h1>Nossa Casinha</h1>
+    <p class="sub">Tudo o que falta pra casa ficar pronta, e quanto precisamos guardar pra isso.</p>
+  </header>
+
+  <section class="cofre" aria-label="Resumo financeiro">
+    <div>
+      <div class="label">Ainda falta gastar</div>
+      <div class="big num" id="falta">R$ 0</div>
+    </div>
+    <div class="bar" aria-hidden="true"><span class="g" id="barG" style="width:0"></span><span class="s" id="barS" style="width:0"></span></div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>Já gasto</span><span><i style="background:var(--sun)"></i>Já guardado</span><span><i style="background:var(--line)"></i>Ainda sem dinheiro</span></div>
+    <div class="grid3">
+      <div><div class="label">Casa toda</div><div class="v num" id="total">R$ 0</div></div>
+      <div><div class="label">Já gasto</div><div class="v num" id="gasto">R$ 0</div></div>
+      <div><div class="label">Itens</div><div class="v num" id="itens">0 de 0</div></div>
+    </div>
+    <div class="meta">
+      <span class="label">Meta do mês</span>
+      <strong class="num" id="porMes">R$ 0 por mês</strong>
+      <span class="note" id="metaTxt">Guardando isso todo mês, tudo fica pago até a mudança.</span>
+    </div>
+    <div class="note" id="guardTxt"></div>
+    <div class="finbtns">
+      <button class="btn" id="bGasto">+ Registrar gasto</button>
+      <button class="btn" id="bGuardar">+ Guardar dinheiro</button>
+      <button class="btn pri" id="bEditar">Editar valores</button>
+    </div>
+  </section>
+
+  <section class="next" aria-label="Próximas compras">
+    <div class="sec"><h2>Próximas compras</h2><span class="note"><span id="status"></span> <button class="sair" id="sair" hidden>Sair</button></span></div>
+    <div class="chips" id="chips" role="group" aria-label="Filtrar por cômodo"></div>
+    <div class="list" id="list"><div class="empty">Carregando a lista da casa...</div></div>
+  </section>
+</div>
+
+<button class="fab" id="add">+ Adicionar item</button>
+<div class="sheet-bg" id="finBg" hidden>
+  <form class="sheet" id="finForm">
+    <h2 id="finTitle">Financeiro</h2>
+    <div id="finGasto" class="glist">
+      <label class="f">Com o que gastaram<input id="gDesc" placeholder="Ex.: Jogo de toalhas"></label>
+      <label class="f">Valor (R$)<input id="gValor" type="number" inputmode="decimal" min="0" step="0.01"></label>
+      <p class="note">Use pra gastos que não estão na lista de itens. Itens da lista vocês marcam como comprados lá embaixo.</p>
+    </div>
+    <div id="finGuardar" class="glist">
+      <label class="f">Quanto guardaram agora (R$)<input id="sValor" type="number" inputmode="decimal" min="0" step="0.01"></label>
+      <p class="note" id="sNote"></p>
+    </div>
+    <div id="finEditar" class="glist">
+      <div class="row2">
+        <label class="f">Total guardado (R$)<input id="eGuard" type="number" inputmode="decimal" min="0" step="0.01"></label>
+        <label class="f">Mudança prevista<input id="eMud" type="month"></label>
+      </div>
+      <div class="label" style="margin-top:6px">Gastos avulsos</div>
+      <div id="eLista" class="glist"></div>
+      <button type="button" class="btn" id="eAdd">+ Adicionar gasto avulso</button>
+      <p class="note">Os valores dos itens da lista vocês editam tocando no item.</p>
+    </div>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="btn" id="finCancel">Cancelar</button><button type="submit" class="btn pri">Salvar</button>
+    </div>
+  </form>
+</div>
+<div class="sheet-bg" id="sheetBg" hidden>
+  <form class="sheet" id="form">
+    <h2 id="formTitle">Novo item</h2>
+    <label class="f">O que é<input id="fNome" required placeholder="Ex.: Micro-ondas"></label>
+    <div class="row2">
+      <label class="f">Cômodo<select id="fComodo"></select></label>
+      <label class="f">Prioridade<select id="fPrio"><option value="1">Alta</option><option value="2">Média</option><option value="3">Baixa</option></select></label>
+    </div>
+    <label class="f">Valor estimado (R$)<input id="fEst" type="number" inputmode="decimal" min="0" step="1"></label>
+    <label class="toggle"><input type="checkbox" id="fComprado">Já compramos</label>
+    <label class="f" id="fPagoWrap">Quanto pagamos (R$)<input id="fPago" type="number" inputmode="decimal" min="0" step="0.01"></label>
+    <div class="actions">
+      <button type="button" class="btn del" id="fDel">Excluir</button>
+      <div style="display:flex;gap:10px"><button type="button" class="btn" id="fCancel">Cancelar</button><button type="submit" class="btn pri">Salvar</button></div>
+    </div>
+  </form>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+</body>
+</html>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+</body>
+</html>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</body>
+</html>
+<script>
+/* ====== COLE AQUI A CONFIGURAÇÃO DO SEU FIREBASE ====== */
+const FIREBASE_CONFIG = {
+  apiKey: "COLE_AQUI",
+  authDomain: "COLE_AQUI",
+  projectId: "COLE_AQUI",
+  storageBucket: "COLE_AQUI",
+  messagingSenderId: "COLE_AQUI",
+  appId: "COLE_AQUI"
+};
+/* ====================================================== */
+
+const COMODOS=["Cozinha","Quarto","Banheiro","Sala","Lavanderia","Geral"];
+const PRIO={1:"ALTA",2:"MÉDIA",3:"BAIXA"};
+const brl=v=>(Number(v)||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
+const $=id=>document.getElementById(id);
+let items=[], config={guardado:0,mudanca:"2027-12",gastos:[]}, filtro="Todos", editing=null, store=null;
+
+/* Modo local (sem banco compartilhado): guarda no navegador */
+const LKEY="nossa-casinha-v1";
+const SEED=[
+ ["Geladeira","Cozinha",1,2500,false],["Fogão cooktop","Cozinha",1,600,false],["Armário de cozinha","Cozinha",1,1200,false],
+ ["Guarda-roupa","Quarto",2,1100,false],["Mesa com cadeiras","Sala",2,700,false],["Armário de banheiro","Banheiro",3,250,false],
+ ["Utensílios de cozinha","Cozinha",2,0,true],["Faqueiro","Cozinha",2,0,true],["Aparelho de jantar","Cozinha",2,0,true],
+ ["Taças e copos","Cozinha",3,0,true],["Cama","Quarto",1,0,true]];
+function localLoad(){try{const s=JSON.parse(localStorage.getItem(LKEY));if(s)return s}catch(e){}
+  return{items:SEED.map((s,i)=>({id:"l"+i,nome:s[0],comodo:s[1],prio:s[2],estimado:s[3],comprado:s[4],pago:0,criadoEm:i})),config:{guardado:3000,mudanca:"2027-12",gastos:[]}}}
+function localSave(){try{localStorage.setItem(LKEY,JSON.stringify({items,config}))}catch(e){}}
+
+function custo(it){return it.comprado?(Number(it.pago)||Number(it.estimado)||0):(Number(it.estimado)||0)}
+function mesesAte(ym){if(!ym)return 0;const[y,m]=ym.split("-").map(Number);const n=new Date();return Math.max(1,(y-n.getFullYear())*12+(m-1-n.getMonth()))}
+
+function avulsos(){return (config.gastos||[]).reduce((a,g)=>a+(Number(g.valor)||0),0)}
+function render(){
+  const extra=avulsos();
+  const total=items.reduce((a,it)=>a+custo(it),0)+extra;
+  const gasto=items.filter(i=>i.comprado).reduce((a,it)=>a+custo(it),0)+extra;
+  const falta=Math.max(0,total-gasto);
+  const guard=Math.min(Number(config.guardado)||0,falta);
+  const semDinheiro=Math.max(0,falta-guard);
+  const meses=mesesAte(config.mudanca);
+  $("falta").textContent=brl(falta);
+  $("total").textContent=brl(total);
+  $("gasto").textContent=brl(gasto);
+  $("itens").textContent=items.filter(i=>i.comprado).length+" de "+items.length;
+  $("barG").style.width=(total?gasto/total*100:0)+"%";
+  $("barS").style.width=(total?guard/total*100:0)+"%";
+  if(semDinheiro===0&&falta>0){$("porMes").textContent="Já está tudo guardado!";$("metaTxt").textContent="O dinheiro guardado cobre o que falta comprar."}
+  else if(falta===0){$("porMes").textContent="Casa completa!";$("metaTxt").textContent="Todos os itens da lista foram comprados."}
+  else{$("porMes").textContent=brl(Math.ceil(semDinheiro/meses))+" por mês";
+    $("metaTxt").textContent="Faltam "+brl(semDinheiro)+" sem dinheiro reservado. Em "+meses+(meses===1?" mês":" meses")+" até a mudança, é isso que precisam guardar por mês."}
+  const ng=(config.gastos||[]).length;
+  $("guardTxt").textContent="Guardado: "+brl(config.guardado)+(ng?" · Gastos avulsos: "+brl(extra)+" ("+ng+")":"");
+
+  const usados=["Todos",...COMODOS.filter(c=>items.some(i=>i.comodo===c))];
+  if(!usados.includes(filtro))filtro="Todos";
+  $("chips").innerHTML="";
+  usados.forEach(c=>{const b=document.createElement("button");b.className="chip";b.textContent=c;b.setAttribute("aria-pressed",c===filtro);b.onclick=()=>{filtro=c;render()};$("chips").appendChild(b)});
+
+  const vis=items.filter(i=>filtro==="Todos"||i.comodo===filtro)
+    .sort((a,b)=>(a.comprado-b.comprado)||(a.prio-b.prio)||(custo(b)-custo(a)));
+  const L=$("list");L.innerHTML="";
+  if(!vis.length){L.innerHTML='<div class="empty">Nenhum item aqui ainda. Toque em "Adicionar item" pra começar a lista.</div>';return}
+  vis.forEach(it=>{
+    const row=document.createElement("div");row.className="item"+(it.comprado?" done":"");
+    const ck=document.createElement("button");ck.className="check"+(it.comprado?" on":"");
+    ck.setAttribute("aria-label",(it.comprado?"Desmarcar ":"Marcar como comprado: ")+it.nome);
+    ck.innerHTML=it.comprado?'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8.5l3.2 3L13 4.5"/></svg>':"";
+    ck.onclick=()=>it.comprado?saveItem(it.id,{comprado:false}):openForm(it,true);
+    const body=document.createElement("div");body.className="body";body.onclick=()=>openForm(it);
+    const n=document.createElement("div");n.className="nome";n.textContent=it.nome;
+    const inf=document.createElement("div");inf.className="info";
+    inf.innerHTML=(it.comprado?"":'<span class="pill p'+it.prio+'">'+PRIO[it.prio]+'</span>')+'<span></span>';
+    inf.lastChild.textContent=it.comodo;
+    body.append(n,inf);
+    const pr=document.createElement("div");pr.className="preco num";
+    pr.innerHTML=brl(custo(it))+"<small>"+(it.comprado?(it.pago?"pago":"informe o valor"):"estimado")+"</small>";
+    row.append(ck,body,pr);L.appendChild(row)});
+}
+
+/* Formulário */
+COMODOS.forEach(c=>{const o=document.createElement("option");o.textContent=c;$("fComodo").appendChild(o)});
+function syncPago(){$("fPagoWrap").hidden=!$("fComprado").checked}
+$("fComprado").onchange=()=>{syncPago();if($("fComprado").checked&&!$("fPago").value)$("fPago").value=$("fEst").value};
+function openForm(it,marcar){
+  editing=it||null;
+  $("formTitle").textContent=it?(marcar?"Compramos!":"Editar item"):"Novo item";
+  $("fNome").value=it?it.nome:"";$("fComodo").value=it?it.comodo:(filtro!=="Todos"?filtro:"Cozinha");
+  $("fPrio").value=it?it.prio:2;$("fEst").value=it&&it.estimado?it.estimado:"";
+  $("fComprado").checked=it?(marcar||it.comprado):false;
+  $("fPago").value=it&&it.pago?it.pago:(marcar&&it.estimado?it.estimado:"");
+  $("fDel").hidden=!it;$("fDel").textContent="Excluir";delArmed=false;
+  syncPago();$("sheetBg").hidden=false;
+  setTimeout(()=>(marcar?$("fPago"):$("fNome")).focus(),50);
+}
+function closeForm(){$("sheetBg").hidden=true;editing=null}
+$("add").onclick=()=>openForm(null);
+$("fCancel").onclick=closeForm;
+$("sheetBg").onclick=e=>{if(e.target===$("sheetBg"))closeForm()};
+let delArmed=false;
+$("fDel").onclick=async()=>{if(!delArmed){delArmed=true;$("fDel").textContent="Toque de novo pra excluir";return}
+  const id=editing.id;closeForm();await removeItem(id)};
+$("form").onsubmit=async e=>{e.preventDefault();
+  const d={nome:$("fNome").value.trim(),comodo:$("fComodo").value,prio:Number($("fPrio").value),
+    estimado:Number($("fEst").value)||0,comprado:$("fComprado").checked,pago:$("fComprado").checked?(Number($("fPago").value)||0):0};
+  if(!d.nome)return;const id=editing&&editing.id;closeForm();
+  if(id)await saveItem(id,d);else await addItem(d)};
+
+/* Financeiro editável */
+let finMode=null;
+function gastoRow(g){const r=document.createElement("div");r.className="gl";
+  r.innerHTML='<input class="gd" placeholder="Descrição"><input class="gv" type="number" inputmode="decimal" min="0" step="0.01" placeholder="R$"><button type="button" class="x" aria-label="Remover gasto">×</button>';
+  r.querySelector(".gd").value=g.desc||"";r.querySelector(".gv").value=g.valor||"";r.dataset.id=g.id||("g"+Date.now()+Math.random().toString(36).slice(2,6));
+  r.querySelector(".x").onclick=()=>r.remove();return r}
+function openFin(mode){finMode=mode;
+  $("finGasto").hidden=mode!=="gasto";$("finGuardar").hidden=mode!=="guardar";$("finEditar").hidden=mode!=="editar";
+  $("finTitle").textContent={gasto:"Registrar gasto",guardar:"Guardar dinheiro",editar:"Editar valores"}[mode];
+  $("gDesc").value="";$("gValor").value="";$("sValor").value="";
+  $("sNote").textContent="Vai somar aos "+brl(config.guardado)+" que já estão guardados.";
+  $("eGuard").value=config.guardado||"";$("eMud").value=config.mudanca||"";
+  $("eLista").innerHTML="";(config.gastos||[]).forEach(g=>$("eLista").appendChild(gastoRow(g)));
+  $("finBg").hidden=false;setTimeout(()=>({gasto:$("gDesc"),guardar:$("sValor"),editar:$("eGuard")})[mode].focus(),50)}
+function closeFin(){$("finBg").hidden=true;finMode=null}
+$("bGasto").onclick=()=>openFin("gasto");
+$("bGuardar").onclick=()=>openFin("guardar");
+$("bEditar").onclick=()=>openFin("editar");
+$("finCancel").onclick=closeFin;
+$("finBg").onclick=e=>{if(e.target===$("finBg"))closeFin()};
+$("eAdd").onclick=()=>{const r=gastoRow({});$("eLista").appendChild(r);r.querySelector(".gd").focus()};
+$("finForm").onsubmit=async e=>{e.preventDefault();const mode=finMode;
+  if(mode==="gasto"){const v=Number($("gValor").value)||0;if(!v)return;
+    const g={id:"g"+Date.now(),desc:$("gDesc").value.trim()||"Gasto",valor:v,data:new Date().toISOString().slice(0,10)};
+    closeFin();await saveConfig({gastos:[...(config.gastos||[]),g]})}
+  else if(mode==="guardar"){const v=Number($("sValor").value)||0;if(!v)return;
+    closeFin();await saveConfig({guardado:Math.round(((Number(config.guardado)||0)+v)*100)/100})}
+  else{const antigos=Object.fromEntries((config.gastos||[]).map(g=>[g.id,g]));
+    const gastos=[...$("eLista").children].map(r=>({id:r.dataset.id,desc:r.querySelector(".gd").value.trim()||"Gasto",
+      valor:Number(r.querySelector(".gv").value)||0,data:(antigos[r.dataset.id]||{}).data||new Date().toISOString().slice(0,10)})).filter(g=>g.valor>0);
+    const upd={guardado:Number($("eGuard").value)||0,mudanca:$("eMud").value||config.mudanca,gastos};
+    closeFin();await saveConfig(upd)}};
+
+/* Persistência */
+function status(t){$("status").textContent=t}
+const erro=()=>status("Não deu pra salvar. Tente de novo.");
+async function addItem(d){d.criadoEm=Date.now();
+  if(store){try{await store.collection("itens").add(d)}catch(e){erro()}}
+  else{items.push({id:"l"+Date.now(),...d});localSave();render()}}
+async function saveItem(id,d){
+  if(store){try{await store.collection("itens").doc(id).update(d)}catch(e){erro()}}
+  else{Object.assign(items.find(i=>i.id===id),d);localSave();render()}}
+async function removeItem(id){
+  if(store){try{await store.collection("itens").doc(id).delete()}catch(e){erro()}}
+  else{items=items.filter(i=>i.id!==id);localSave();render()}}
+async function saveConfig(d){Object.assign(config,d);render();
+  if(store){try{await store.collection("casa").doc("config").set({...config})}catch(e){erro()}}
+  else{localSave()}}
+
+function startLocal(){const s=localLoad();items=s.items;config={...config,...s.config};status("Modo teste: salvo só neste aparelho");render()}
+
+let unsub=[];
+async function startFirebase(db){
+  store=db;$("sair").hidden=false;status("Conectando...");
+  const cfgRef=db.collection("casa").doc("config");
+  try{const c=await cfgRef.get();
+    if(!c.exists){ // primeira vez: cria a lista inicial
+      const b=db.batch();
+      SEED.forEach((x,i)=>b.set(db.collection("itens").doc(),{nome:x[0],comodo:x[1],prio:x[2],estimado:x[3],comprado:x[4],pago:0,criadoEm:i}));
+      b.set(cfgRef,{guardado:3000,mudanca:"2027-12",gastos:[]});await b.commit()}
+  }catch(e){status("Sem permissão no banco. Confira as regras do Firestore.");return}
+  unsub.push(db.collection("itens").onSnapshot(snap=>{
+    status(snap.metadata.fromCache?"Sem internet, mostrando a última versão":"Sincronizado");
+    items=snap.docs.map(d=>({id:d.id,...d.data()}));render()},()=>status("Não deu pra carregar a lista")));
+  unsub.push(cfgRef.onSnapshot(s=>{if(s.exists)config={...config,...s.data()};render()},()=>{}));
+}
+
+const configurado=!Object.values(FIREBASE_CONFIG).includes("COLE_AQUI");
+if(!configurado||!window.firebase){startLocal()}
+else{
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const auth=firebase.auth(), db=firebase.firestore();
+  try{db.enablePersistence({synchronizeTabs:true}).catch(()=>{})}catch(e){}
+  auth.onAuthStateChanged(u=>{
+    if(u){$("login").hidden=true;startFirebase(db)}
+    else{unsub.forEach(f=>f());unsub=[];store=null;items=[];render();$("login").hidden=false}});
+  $("loginForm").onsubmit=async e=>{e.preventDefault();$("lErr").textContent="";
+    try{await auth.signInWithEmailAndPassword($("lEmail").value.trim(),$("lSenha").value)}
+    catch(err){$("lErr").textContent="Email ou senha incorretos. Confira e tente de novo."}};
+  $("sair").onclick=()=>auth.signOut();
+}
+</script>
+</body>
+</html>
