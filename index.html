@@ -117,11 +117,9 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid 
 <div class="login" id="login" hidden>
   <form id="loginForm">
     <h1>Nossa Casinha</h1>
-    <p class="sub">Entre com o email e a senha de vocês.</p>
-    <label class="f">Email<input id="lEmail" type="email" autocomplete="username" required></label>
-    <label class="f">Senha<input id="lSenha" type="password" autocomplete="current-password" required></label>
+    <p class="sub">Entre com a sua conta Google pra ver a lista da casa.</p>
+    <button class="btn pri" type="submit">Entrar com Google</button>
     <p class="err" id="lErr"></p>
-    <button class="btn pri" type="submit">Entrar</button>
   </form>
 </div>
 
@@ -221,13 +219,14 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid 
 <script>
 /* ====== COLE AQUI A CONFIGURAÇÃO DO SEU FIREBASE ====== */
 const FIREBASE_CONFIG = {
-  apiKey: "COLE_AQUI",
-  authDomain: "COLE_AQUI",
-  projectId: "COLE_AQUI",
-  storageBucket: "COLE_AQUI",
-  messagingSenderId: "COLE_AQUI",
-  appId: "COLE_AQUI"
+  apiKey: "AIzaSyBkeO-F-F6H8991GdUVL4GO7QbPuel0OAs",
+  authDomain: "nossa-casinha-34943.firebaseapp.com",
+  projectId: "nossa-casinha-34943",
+  storageBucket: "nossa-casinha-34943.firebasestorage.app",
+  messagingSenderId: "160831524680",
+  appId: "1:160831524680:web:c1a88513bc34b2797dad7d"
 };
+const PERMITIDOS = ["mariaeduardaoutelook200@gmail.com","wesleyfranciscojapa@gmail.com"];
 /* ====================================================== */
 
 const COMODOS=["Cozinha","Quarto","Banheiro","Sala","Lavanderia","Geral"];
@@ -400,11 +399,16 @@ else{
   const auth=firebase.auth(), db=firebase.firestore();
   try{db.enablePersistence({synchronizeTabs:true}).catch(()=>{})}catch(e){}
   auth.onAuthStateChanged(u=>{
+    if(u&&!PERMITIDOS.includes((u.email||"").toLowerCase())){auth.signOut();$("lErr").textContent="Essa conta não tem acesso à Nossa Casinha.";return}
     if(u){$("login").hidden=true;startFirebase(db)}
     else{unsub.forEach(f=>f());unsub=[];store=null;items=[];render();$("login").hidden=false}});
+  const prov=new firebase.auth.GoogleAuthProvider();
+  prov.setCustomParameters({prompt:"select_account"});
   $("loginForm").onsubmit=async e=>{e.preventDefault();$("lErr").textContent="";
-    try{await auth.signInWithEmailAndPassword($("lEmail").value.trim(),$("lSenha").value)}
-    catch(err){$("lErr").textContent="Email ou senha incorretos. Confira e tente de novo."}};
+    try{await auth.signInWithPopup(prov)}
+    catch(err){
+      if(err&&(err.code==="auth/popup-blocked"||err.code==="auth/operation-not-supported-in-this-environment")){try{await auth.signInWithRedirect(prov)}catch(e2){}}
+      else if(err&&err.code!=="auth/popup-closed-by-user"&&err.code!=="auth/cancelled-popup-request"){$("lErr").textContent="Não deu pra entrar. Tente de novo."}}};
   $("sair").onclick=()=>auth.signOut();
 }
 </script>
